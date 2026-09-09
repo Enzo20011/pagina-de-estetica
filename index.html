@@ -130,6 +130,8 @@
     font-style:italic;
     font-size:1.35rem;
     letter-spacing:0.01em;
+    color:var(--ink);
+    text-decoration:none;
   }
   .logo span{color:var(--gold);}
   .btn{
@@ -268,6 +270,7 @@
     margin-top:16px;
     justify-content:center;
     text-align:center;
+    background:var(--wine);
     color:var(--on-accent);
   }
 
@@ -1075,7 +1078,7 @@
 <header id="site-header">
   <div id="scroll-sentinel" aria-hidden="true"></div>
   <div class="nav">
-    <div class="logo">Marbella <span>Nails</span></div>
+    <a href="#" class="logo" id="nav-logo">Marbella <span>Nails</span></a>
     <ul class="nav-links" id="nav-links">
       <li><a href="#servicios">Servicios</a></li>
       <li><a href="#estudio">El Estudio</a></li>
@@ -1406,7 +1409,6 @@
   <section class="ubicacion" id="ubicacion">
     <div class="wrap ubicacion-grid">
       <div class="direccion">
-        <h2 class="eyebrow-free-title" style="margin-bottom:22px;">Encontranos en Itaembe Guazú</h2>
         <p>Estudio</p>
         <p class="addr">Calle 137 A, Nro. 9171<br>Itaembe Guazú, Posadas, Misiones (3300)</p>
         <p>Turnos con reserva previa por WhatsApp, en un estudio recientemente renovado para una experiencia más cómoda.</p>
@@ -2208,6 +2210,14 @@
 
   if (backToTop){
     backToTop.addEventListener('click', function(){
+      window.scrollTo({ top: 0, behavior: prefiereMenosMovimiento ? 'auto' : 'smooth' });
+    });
+  }
+
+  var navLogo = document.getElementById('nav-logo');
+  if (navLogo){
+    navLogo.addEventListener('click', function(e){
+      e.preventDefault();
       window.scrollTo({ top: 0, behavior: prefiereMenosMovimiento ? 'auto' : 'smooth' });
     });
   }
