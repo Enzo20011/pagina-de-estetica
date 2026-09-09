@@ -1280,9 +1280,9 @@
           <input type="text" id="reserva-nombre" name="nombre" placeholder="Ej: María López">
         </div>
         <div class="form-group">
-          <label for="reserva-email">Email</label>
+          <label for="reserva-email">Email (opcional)</label>
           <input type="email" id="reserva-email" name="email" placeholder="Ej: maria@gmail.com">
-          <p class="form-hint">Te mandamos ahí la confirmación de tu turno.</p>
+          <p class="form-hint">Opcional. Si lo completás, te enviamos ahí la confirmación de tu turno.</p>
         </div>
         <button type="button" class="btn btn-primary" id="btn-continuar-nombre">Continuar</button>
       </div>
@@ -1757,7 +1757,7 @@
     }
     nombreInput.classList.remove('field-error');
 
-    if (!email || !emailInput.checkValidity()){
+    if (email && !emailInput.checkValidity()){
       emailInput.classList.add('field-error');
       emailInput.focus();
       return;
@@ -1936,10 +1936,12 @@
     var date = parseISODate(fechaInput.value);
     var fechaFormateada = date.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' });
 
+    var email = emailInput.value.trim();
+
     resumenCard.innerHTML =
       '<div class="resumen-row"><span>Servicio</span><span>' + selectedService + '</span></div>' +
       '<div class="resumen-row"><span>Nombre</span><span>' + nombreInput.value.trim() + '</span></div>' +
-      '<div class="resumen-row"><span>Email</span><span>' + emailInput.value.trim() + '</span></div>' +
+      (email ? '<div class="resumen-row"><span>Email</span><span>' + email + '</span></div>' : '') +
       '<div class="resumen-row"><span>Fecha</span><span>' + fechaFormateada + '</span></div>' +
       '<div class="resumen-row"><span>Horario</span><span>' + selectedTime + ' hs</span></div>';
   }
@@ -1974,7 +1976,7 @@
   form.addEventListener('submit', function(e){
     e.preventDefault();
     var email = emailInput.value.trim();
-    if (!selectedService || !fechaInput.value || !selectedTime || !nombreInput.value.trim() || !email){
+    if (!selectedService || !fechaInput.value || !selectedTime || !nombreInput.value.trim()){
       errorEl.textContent = 'Faltan datos — volvé atrás y completá el paso que falta.';
       errorEl.hidden = false;
       return;
@@ -2009,19 +2011,21 @@
         'Servicio: ' + selectedService + '\n' +
         'Día: ' + fechaFormateada + '\n' +
         'Horario: ' + horarioTexto + '\n' +
-        'Nombre: ' + nombre + '\n' +
-        'Email: ' + email;
+        'Nombre: ' + nombre +
+        (email ? '\nEmail: ' + email : '');
 
       var url = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(mensaje);
       window.open(url, '_blank', 'noopener');
 
-      enviarEmailConfirmacion({
-        email: email,
-        nombre: nombre,
-        servicio: selectedService,
-        fecha: fechaFormateada,
-        horario: horarioTexto
-      });
+      if (email){
+        enviarEmailConfirmacion({
+          email: email,
+          nombre: nombre,
+          servicio: selectedService,
+          fecha: fechaFormateada,
+          horario: horarioTexto
+        });
+      }
 
       guardarReserva({
         fecha: fechaISO,

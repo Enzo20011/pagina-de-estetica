@@ -720,6 +720,7 @@
         panelUser.textContent = 'Conectada como ' + user.email;
         cargarReservas();
       } else {
+        detenerListenerReservas();
         panel.hidden = true;
         loginScreen.hidden = false;
         emailInput.focus();
@@ -730,28 +731,41 @@
     loginError.hidden = false;
   }
 
-  // ---------- Listado de reservas ----------
+  // ---------- Listado de reservas (en vivo) ----------
+  var reservasCache = [];
+  var unsubscribeReservas = null;
+
   function cargarReservas(){
     if (!db){
       estadoCarga.textContent = 'No se pudo conectar con la base de datos.';
       return;
     }
 
+    if (unsubscribeReservas) return; // el listener ya está activo, no hace falta suscribirse de nuevo
+
     estadoCarga.hidden = false;
     estadoCarga.textContent = 'Cargando reservas…';
     listaReservas.innerHTML = '';
 
-    db.collection('reservas').get().then(function(snapshot){
+    unsubscribeReservas = db.collection('reservas').onSnapshot(function(snapshot){
       var reservas = [];
       snapshot.forEach(function(doc){
         var d = doc.data();
         if (d.fecha && d.hora) reservas.push({ id: doc.id, datos: d });
       });
-      renderReservas(reservas);
-    }).catch(function(err){
+      reservasCache = reservas;
+      renderReservas(reservasCache);
+    }, function(err){
       estadoCarga.textContent = 'No se pudieron cargar las reservas. Probá actualizar de nuevo.';
-      console.warn('Error al cargar reservas:', err);
+      console.warn('Error al escuchar reservas:', err);
     });
+  }
+
+  function detenerListenerReservas(){
+    if (unsubscribeReservas){
+      unsubscribeReservas();
+      unsubscribeReservas = null;
+    }
   }
 
   function cancelarReserva(id, btn){
@@ -860,9 +874,11 @@
   }
 
   filtroRango.addEventListener('change', function(){
-    if (!panel.hidden) cargarReservas();
+    if (!panel.hidden) renderReservas(reservasCache);
   });
-  btnRefrescar.addEventListener('click', cargarReservas);
+  btnRefrescar.addEventListener('click', function(){
+    renderReservas(reservasCache);
+  });
 })();
 </script>
 
