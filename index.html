@@ -247,12 +247,25 @@
   .nav-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-6px) rotate(-45deg);}
 
   .mobile-menu{
-    display:none;
-    flex-direction:column;
-    padding:6px 24px 22px;
-    border-top:1px solid var(--line);
+    display:grid;
+    grid-template-rows:0fr;
+    overflow:hidden;
+    transition:grid-template-rows .38s cubic-bezier(.4,0,.2,1);
   }
-  .mobile-menu.open{display:flex;}
+  .mobile-menu.open{grid-template-rows:1fr;}
+  .mobile-menu-inner{
+    display:flex;
+    flex-direction:column;
+    min-height:0;
+    padding:0 24px;
+    border-top:1px solid transparent;
+    overflow:hidden;
+    transition:padding .38s cubic-bezier(.4,0,.2,1), border-color .38s ease;
+  }
+  .mobile-menu.open .mobile-menu-inner{
+    padding:6px 24px 22px;
+    border-top-color:var(--line);
+  }
   .mobile-menu a, .mobile-menu button{
     padding:14px 2px;
     color:var(--ink-soft);
@@ -267,7 +280,17 @@
     width:100%;
     font-family:'Work Sans', sans-serif;
     cursor:pointer;
+    flex-shrink:0;
+    opacity:0;
+    transform:translateY(-8px);
+    transition:opacity .3s ease, transform .3s ease, color .2s ease;
   }
+  .mobile-menu.open a, .mobile-menu.open button{opacity:1; transform:translateY(0);}
+  .mobile-menu.open a:nth-child(1){transition-delay:.06s;}
+  .mobile-menu.open a:nth-child(2){transition-delay:.11s;}
+  .mobile-menu.open a:nth-child(3){transition-delay:.16s;}
+  .mobile-menu.open a:nth-child(4){transition-delay:.21s;}
+  .mobile-menu.open button:nth-child(5){transition-delay:.26s;}
   .mobile-menu a.active, .mobile-menu button.active{color:var(--gold);}
   .mobile-menu a.btn, .mobile-menu button.btn{
     border-bottom:none;
@@ -276,6 +299,9 @@
     text-align:center;
     background:var(--wine);
     color:var(--on-accent);
+  }
+  @media (prefers-reduced-motion:reduce){
+    .mobile-menu, .mobile-menu-inner, .mobile-menu a, .mobile-menu button{transition:none !important;}
   }
 
   @media (max-width:860px){
@@ -1104,11 +1130,13 @@
     </div>
   </div>
   <div class="mobile-menu" id="mobile-menu">
-    <a href="#servicios">Servicios</a>
-    <a href="#estudio">El Estudio</a>
-    <a href="#trabajos">Trabajos</a>
-    <a href="#ubicacion">Ubicación</a>
-    <button type="button" class="btn btn-primary js-open-reserva">Reservar turno</button>
+    <div class="mobile-menu-inner">
+      <a href="#servicios">Servicios</a>
+      <a href="#estudio">El Estudio</a>
+      <a href="#trabajos">Trabajos</a>
+      <a href="#ubicacion">Ubicación</a>
+      <button type="button" class="btn btn-primary js-open-reserva">Reservar turno</button>
+    </div>
   </div>
 </header>
 
