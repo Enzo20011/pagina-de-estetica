@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Panel — Marbella Nails</title>
+<script>
+(function(){
+  try {
+    if (localStorage.getItem('marbella_theme') === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  } catch (err) { /* localStorage no disponible */ }
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,400&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#faf6ef;
+    --bg-alt:#f2e9db;
+    --surface:#ffffff;
+    --ink:#120e0a;
+    --ink-soft:#3d2f22;
+    --ink-mute:#55462f;
+    --wine:#7d2c40;
+    --wine-light:#a8455d;
+    --gold:#8a6429;
+    --error:#7d2c40;
+    --line:rgba(43,32,24,0.12);
+    --on-accent:#f7f1e6;
+    --maxw:880px;
+  }
+  [data-theme="dark"]{
+    --bg:#1b1410;
+    --bg-alt:#211913;
+    --surface:#2a1f18;
+    --ink:#f4ece1;
+    --ink-soft:#cdbeaa;
+    --ink-mute:#a3907a;
+    --wine:#7d2c40;
+    --wine-light:#a8455d;
+    --gold:#c9a468;
+    --error:#e0899d;
+    --line:rgba(244,236,225,0.12);
+    --on-accent:#f4ece1;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    transition:background .2s ease, color .2s ease;
+  }
+  h1,h2{font-family:'Fraunces', serif; font-weight:600; margin:0;}
+  p{margin:0;}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 20px;}
+
+  /* ---------- Login ---------- */
+  .login-screen{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    text-align:center;
+    gap:6px;
+  }
+  .login-screen .logo{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-size:1.6rem;
+    margin-bottom:4px;
+  }
+  .login-screen .logo span{color:var(--gold);}
+  .login-screen p.sub{color:var(--ink-mute); margin-bottom:28px;}
+  .login-box{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    width:100%;
+    max-width:280px;
+  }
+  input[type="password"], input[type="email"]{
+    width:100%;
+    padding:13px 16px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--surface);
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    font-size:0.95rem;
+  }
+  input[type="password"]:focus, input[type="email"]:focus{outline:none; border-color:var(--gold);}
+  .btn{
+    padding:13px 16px;
+    border-radius:8px;
+    border:none;
+    background:var(--wine);
+    color:var(--on-accent);
+    font-family:'Work Sans', sans-serif;
+    font-size:0.95rem;
+    font-weight:600;
+    cursor:pointer;
+    transition:background .2s ease;
+  }
+  .btn:hover{background:var(--wine-light);}
+  .btn:disabled{opacity:0.5; cursor:not-allowed;}
+  .btn-ghost{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--ink-soft);
+    font-weight:500;
+  }
+  .btn-ghost:hover{border-color:var(--gold); color:var(--gold);}
+  .btn-google{
+    background:var(--surface);
+    border:1px solid var(--line);
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+  }
+  .btn-google:hover{border-color:var(--gold);}
+  .btn-google svg{flex-shrink:0;}
+  .login-divider{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    color:var(--ink-mute);
+    font-size:0.8rem;
+    margin:2px 0;
+  }
+  .login-divider::before, .login-divider::after{
+    content:'';
+    flex:1;
+    height:1px;
+    background:var(--line);
+  }
+  .login-error{color:var(--error); font-size:0.85rem; margin-top:4px;}
+  .theme-toggle{
+    position:fixed;
+    top:20px;
+    right:20px;
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background:var(--surface);
+    color:var(--ink-soft);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    flex-shrink:0;
+    transition:border-color .2s ease, color .2s ease;
+  }
+  .theme-toggle:hover{border-color:var(--gold); color:var(--gold);}
+  .theme-toggle .icon-moon{display:none;}
+  [data-theme="dark"] .theme-toggle .icon-sun{display:none;}
+  [data-theme="dark"] .theme-toggle .icon-moon{display:block;}
+
+  /* ---------- Panel ---------- */
+  .panel{padding:32px 0 60px;}
+  .panel-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    flex-wrap:wrap;
+    gap:16px;
+    margin-bottom:28px;
+  }
+  .panel-head .logo{font-family:'Fraunces', serif; font-style:italic; font-size:1.2rem;}
+  .panel-head .logo span{color:var(--gold);}
+  .panel-head h1{font-size:1.5rem; margin-top:4px;}
+  .panel-user{color:var(--ink-mute); font-size:0.82rem; margin-top:6px;}
+  .panel-actions{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+  select{
+    padding:10px 14px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--surface);
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    font-size:0.9rem;
+  }
+  .btn-sm{padding:10px 16px; font-size:0.88rem;}
+
+  .estado{color:var(--ink-mute); font-size:0.92rem; padding:20px 0;}
+
+  .grupo-fecha{margin-bottom:28px;}
+  .grupo-fecha-titulo{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    color:var(--gold);
+    font-size:1.05rem;
+    margin-bottom:12px;
+    text-transform:capitalize;
+  }
+  .reserva-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:16px 18px;
+    margin-bottom:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .reserva-hora{
+    font-family:'Fraunces', serif;
+    font-size:1.15rem;
+    color:var(--ink);
+    min-width:64px;
+  }
+  .reserva-info{flex:1; min-width:180px;}
+  .reserva-servicio{font-weight:600; color:var(--ink);}
+  .reserva-nombre{color:var(--ink-soft); font-size:0.92rem; margin-top:2px;}
+  .reserva-email{color:var(--ink-mute); font-size:0.85rem; margin-top:2px;}
+  .reserva-derecha{display:flex; align-items:center; gap:10px;}
+  .btn-cancelar{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--error);
+    font-family:'Work Sans', sans-serif;
+    font-size:0.8rem;
+    padding:7px 12px;
+    border-radius:99px;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:border-color .2s ease, background .2s ease;
+  }
+  .btn-cancelar:hover{border-color:var(--error); background:var(--bg);}
+  .vacio{
+    text-align:center;
+    color:var(--ink-mute);
+    padding:60px 20px;
+    font-size:0.95rem;
+  }
+  [hidden]{display:none !important;}
+
+  @media (max-width:600px){
+    .reserva-card{flex-direction:column; align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+
+<button type="button" class="theme-toggle" id="theme-toggle" aria-label="Cambiar a modo oscuro">
+  <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+  <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></svg>
+</button>
+
+<div class="login-screen" id="login-screen">
+  <div class="logo">Marbella <span>Nails</span></div>
+  <p class="sub">Panel de reservas</p>
+  <div class="login-box">
+    <input type="email" id="login-email" placeholder="Email" autocomplete="username">
+    <input type="password" id="login-password" placeholder="Contraseña" autocomplete="current-password">
+    <button type="button" class="btn" id="btn-entrar">Entrar</button>
+    <div class="login-divider">o</div>
+    <button type="button" class="btn btn-google" id="btn-google">
+      <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.9c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.84.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.98v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.95 10.7A5.4 5.4 0 0 1 3.67 9c0-.59.1-1.17.28-1.7V4.97H.98A9 9 0 0 0 0 9c0 1.45.35 2.83.98 4.03l2.97-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.51.46 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .98 4.97l2.97 2.33C4.66 5.17 6.65 3.58 9 3.58z"/></svg>
+      Continuar con Google
+    </button>
+    <p class="login-error" id="login-error" hidden></p>
+  </div>
+</div>
+
+<div class="panel" id="panel" hidden>
+  <div class="wrap">
+    <div class="panel-head">
+      <div>
+        <div class="logo">Marbella <span>Nails</span></div>
+        <h1>Reservas</h1>
+        <p class="panel-user" id="panel-user"></p>
+      </div>
+      <div class="panel-actions">
+        <select id="filtro-rango">
+          <option value="proximas">Próximas</option>
+          <option value="hoy">Hoy</option>
+          <option value="todas">Todas</option>
+        </select>
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-refrescar">Actualizar</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-salir">Cerrar sesión</button>
+      </div>
+    </div>
+
+    <p class="estado" id="estado-carga">Cargando reservas…</p>
+    <div id="lista-reservas"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.12.2/firebase-app-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.12.2/firebase-auth-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.12.2/firebase-firestore-compat.js"></script>
+<script>
+(function(){
+  // --- Misma configuración de Firebase que usa el sitio principal ---
+  var firebaseConfig = {
+    apiKey: "AIzaSyA8ZXqiHSecv90s-uksw-b08FF0QCAKm4Q",
+    authDomain: "nails-fd3fa.firebaseapp.com",
+    projectId: "nails-fd3fa",
+    storageBucket: "nails-fd3fa.firebasestorage.app",
+    messagingSenderId: "129964287525",
+    appId: "1:129964287525:web:e7f0ff231b7f89bb2601cc"
+  };
+
+  // ---------- Modo oscuro ----------
+  var THEME_KEY = 'marbella_theme';
+  var themeToggle = document.getElementById('theme-toggle');
+  if (themeToggle){
+    themeToggle.addEventListener('click', function(){
+      var esOscuro = document.documentElement.getAttribute('data-theme') === 'dark';
+      if (esOscuro){
+        document.documentElement.removeAttribute('data-theme');
+        themeToggle.setAttribute('aria-label', 'Cambiar a modo oscuro');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        themeToggle.setAttribute('aria-label', 'Cambiar a modo claro');
+      }
+      try { localStorage.setItem(THEME_KEY, esOscuro ? 'light' : 'dark'); } catch (err) { /* localStorage no disponible */ }
+    });
+    if (document.documentElement.getAttribute('data-theme') === 'dark'){
+      themeToggle.setAttribute('aria-label', 'Cambiar a modo claro');
+    }
+  }
+
+  var auth = null;
+  var db = null;
+  if (window.firebase){
+    try {
+      firebase.initializeApp(firebaseConfig);
+      auth = firebase.auth();
+      db = firebase.firestore();
+    } catch (err) { /* Firebase no disponible */ }
+  }
+
+  var loginScreen = document.getElementById('login-screen');
+  var panel = document.getElementById('panel');
+  var emailInput = document.getElementById('login-email');
+  var passwordInput = document.getElementById('login-password');
+  var btnEntrar = document.getElementById('btn-entrar');
+  var btnGoogle = document.getElementById('btn-google');
+  var loginError = document.getElementById('login-error');
+  var panelUser = document.getElementById('panel-user');
+  var btnSalir = document.getElementById('btn-salir');
+  var filtroRango = document.getElementById('filtro-rango');
+  var btnRefrescar = document.getElementById('btn-refrescar');
+  var estadoCarga = document.getElementById('estado-carga');
+  var listaReservas = document.getElementById('lista-reservas');
+
+  function parseISODate(value){
+    var parts = value.split('-').map(Number);
+    return new Date(parts[0], parts[1] - 1, parts[2]);
+  }
+
+  function toISODate(d){
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+
+  // ---------- Login con Firebase Authentication (email/contraseña o Google) ----------
+  var CORREO_PERMITIDO = 'enzovillalba665@gmail.com';
+
+  var MENSAJES_ERROR = {
+    'auth/invalid-email': 'Ese email no es válido.',
+    'auth/user-not-found': 'No existe una cuenta con ese email.',
+    'auth/wrong-password': 'Contraseña incorrecta.',
+    'auth/invalid-credential': 'Email o contraseña incorrectos.',
+    'auth/too-many-requests': 'Demasiados intentos — esperá un momento y probá de nuevo.',
+    'auth/popup-blocked': 'El navegador bloqueó la ventana de Google — permití los pop-ups e intentá de nuevo.'
+  };
+
+  function intentarEntrar(){
+    if (!auth) return;
+    loginError.hidden = true;
+    btnEntrar.disabled = true;
+
+    auth.signInWithEmailAndPassword(emailInput.value.trim(), passwordInput.value)
+      .catch(function(err){
+        loginError.textContent = MENSAJES_ERROR[err.code] || 'No se pudo iniciar sesión.';
+        loginError.hidden = false;
+        passwordInput.value = '';
+      })
+      .finally(function(){
+        btnEntrar.disabled = false;
+      });
+  }
+
+  function intentarEntrarGoogle(){
+    if (!auth) return;
+    loginError.hidden = true;
+    btnGoogle.disabled = true;
+
+    var provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider)
+      .catch(function(err){
+        var msg = MENSAJES_ERROR[err.code];
+        if (msg){
+          loginError.textContent = msg;
+          loginError.hidden = false;
+        }
+      })
+      .finally(function(){
+        btnGoogle.disabled = false;
+      });
+  }
+
+  btnEntrar.addEventListener('click', intentarEntrar);
+  [emailInput, passwordInput].forEach(function(input){
+    input.addEventListener('keydown', function(e){
+      if (e.key === 'Enter'){
+        e.preventDefault();
+        intentarEntrar();
+      }
+    });
+  });
+  btnGoogle.addEventListener('click', intentarEntrarGoogle);
+
+  btnSalir.addEventListener('click', function(){
+    if (auth) auth.signOut();
+  });
+
+  if (auth){
+    auth.onAuthStateChanged(function(user){
+      if (user && user.email !== CORREO_PERMITIDO){
+        auth.signOut();
+        loginError.textContent = 'Esta cuenta no tiene acceso a este panel.';
+        loginError.hidden = false;
+        return;
+      }
+      if (user){
+        loginScreen.hidden = true;
+        panel.hidden = false;
+        panelUser.textContent = 'Conectada como ' + user.email;
+        cargarReservas();
+      } else {
+        panel.hidden = true;
+        loginScreen.hidden = false;
+        emailInput.focus();
+      }
+    });
+  } else {
+    loginError.textContent = 'No se pudo conectar con Firebase.';
+    loginError.hidden = false;
+  }
+
+  // ---------- Listado de reservas ----------
+  function cargarReservas(){
+    if (!db){
+      estadoCarga.textContent = 'No se pudo conectar con la base de datos.';
+      return;
+    }
+
+    estadoCarga.hidden = false;
+    estadoCarga.textContent = 'Cargando reservas…';
+    listaReservas.innerHTML = '';
+
+    db.collection('reservas').get().then(function(snapshot){
+      var reservas = [];
+      snapshot.forEach(function(doc){
+        var d = doc.data();
+        if (d.fecha && d.hora) reservas.push({ id: doc.id, datos: d });
+      });
+      renderReservas(reservas);
+    }).catch(function(err){
+      estadoCarga.textContent = 'No se pudieron cargar las reservas. Probá actualizar de nuevo.';
+      console.warn('Error al cargar reservas:', err);
+    });
+  }
+
+  function cancelarReserva(id, btn){
+    if (!confirm('¿Cancelar y borrar esta reserva?')) return;
+    btn.disabled = true;
+    btn.textContent = 'Borrando…';
+
+    db.collection('reservas').doc(id).delete()
+      .then(function(){ cargarReservas(); })
+      .catch(function(err){
+        console.warn('No se pudo cancelar la reserva:', err);
+        btn.disabled = false;
+        btn.textContent = 'Cancelar';
+        alert('No se pudo cancelar la reserva. Probá de nuevo.');
+      });
+  }
+
+  function renderReservas(reservas){
+    var hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    var hoyISO = toISODate(hoy);
+    var filtro = filtroRango.value;
+
+    reservas = reservas.filter(function(item){
+      var r = item.datos;
+      if (filtro === 'todas') return true;
+      if (filtro === 'hoy') return r.fecha === hoyISO;
+      // 'proximas': hoy en adelante
+      return r.fecha >= hoyISO;
+    });
+
+    reservas.sort(function(a, b){
+      var ra = a.datos, rb = b.datos;
+      if (ra.fecha !== rb.fecha) return ra.fecha < rb.fecha ? -1 : 1;
+      return ra.hora < rb.hora ? -1 : (ra.hora > rb.hora ? 1 : 0);
+    });
+
+    estadoCarga.hidden = true;
+    listaReservas.innerHTML = '';
+
+    if (reservas.length === 0){
+      listaReservas.innerHTML = '<p class="vacio">No hay reservas para este filtro.</p>';
+      return;
+    }
+
+    var fechaActual = null;
+    var grupo = null;
+
+    reservas.forEach(function(item){
+      var r = item.datos;
+
+      if (r.fecha !== fechaActual){
+        fechaActual = r.fecha;
+        grupo = document.createElement('div');
+        grupo.className = 'grupo-fecha';
+
+        var titulo = document.createElement('p');
+        titulo.className = 'grupo-fecha-titulo';
+        var fechaFormateada = parseISODate(r.fecha).toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' });
+        titulo.textContent = r.fecha === hoyISO ? 'Hoy — ' + fechaFormateada : fechaFormateada;
+        grupo.appendChild(titulo);
+
+        listaReservas.appendChild(grupo);
+      }
+
+      var card = document.createElement('div');
+      card.className = 'reserva-card';
+
+      var izquierda = document.createElement('div');
+      izquierda.className = 'reserva-hora';
+      izquierda.textContent = r.hora;
+
+      var info = document.createElement('div');
+      info.className = 'reserva-info';
+      info.innerHTML =
+        '<div class="reserva-servicio">' + (r.servicio || 'Sin especificar') + '</div>' +
+        '<div class="reserva-nombre">' + (r.nombre || '') + '</div>' +
+        (r.email ? '<div class="reserva-email">' + r.email + '</div>' : '');
+
+      var derecha = document.createElement('div');
+      derecha.className = 'reserva-derecha';
+
+      var btnCancelar = document.createElement('button');
+      btnCancelar.type = 'button';
+      btnCancelar.className = 'btn-cancelar';
+      btnCancelar.textContent = 'Cancelar';
+      btnCancelar.addEventListener('click', function(){
+        cancelarReserva(item.id, btnCancelar);
+      });
+      derecha.appendChild(btnCancelar);
+
+      card.appendChild(izquierda);
+      card.appendChild(info);
+      card.appendChild(derecha);
+      grupo.appendChild(card);
+    });
+  }
+
+  filtroRango.addEventListener('change', function(){
+    if (!panel.hidden) cargarReservas();
+  });
+  btnRefrescar.addEventListener('click', cargarReservas);
+})();
+</script>
+
+</body>
+</html>
