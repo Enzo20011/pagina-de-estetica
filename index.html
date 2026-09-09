@@ -2144,6 +2144,33 @@
 (function(){
   // ---------- Scroll suave solo en los links de navegación (no en el scroll libre) ----------
   var prefiereMenosMovimiento = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // El scroll-behavior:smooth nativo del navegador es muy rápido/abrupto en distancias largas;
+  // esta versión con easing propio da una sensación más pausada y premium.
+  function easeInOutCubic(t){
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+
+  function scrollSuaveA(destinoY){
+    if (prefiereMenosMovimiento){
+      window.scrollTo(0, destinoY);
+      return;
+    }
+    var inicioY = window.scrollY;
+    var distancia = destinoY - inicioY;
+    var duracion = Math.min(1100, Math.max(500, Math.abs(distancia) * 0.6));
+    var inicioTiempo = null;
+
+    function paso(timestamp){
+      if (inicioTiempo === null) inicioTiempo = timestamp;
+      var transcurrido = timestamp - inicioTiempo;
+      var progreso = Math.min(transcurrido / duracion, 1);
+      window.scrollTo(0, inicioY + distancia * easeInOutCubic(progreso));
+      if (progreso < 1) requestAnimationFrame(paso);
+    }
+    requestAnimationFrame(paso);
+  }
+
   document.addEventListener('click', function(e){
     var link = e.target.closest('a[href^="#"]');
     if (!link) return;
@@ -2151,7 +2178,9 @@
     var target = id && document.getElementById(id);
     if (!target) return;
     e.preventDefault();
-    target.scrollIntoView({ behavior: prefiereMenosMovimiento ? 'auto' : 'smooth', block: 'start' });
+    var offset = parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
+    var destinoY = target.getBoundingClientRect().top + window.scrollY - offset;
+    scrollSuaveA(destinoY);
   });
 
   // ---------- Modo claro / oscuro ----------
@@ -2259,7 +2288,7 @@
 
   if (backToTop){
     backToTop.addEventListener('click', function(){
-      window.scrollTo({ top: 0, behavior: prefiereMenosMovimiento ? 'auto' : 'smooth' });
+      scrollSuaveA(0);
     });
   }
 
@@ -2267,7 +2296,7 @@
   if (navLogo){
     navLogo.addEventListener('click', function(e){
       e.preventDefault();
-      window.scrollTo({ top: 0, behavior: prefiereMenosMovimiento ? 'auto' : 'smooth' });
+      scrollSuaveA(0);
     });
   }
 
