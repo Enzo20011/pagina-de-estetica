@@ -228,6 +228,19 @@
   .reserva-nombre{color:var(--ink-soft); font-size:0.92rem; margin-top:2px;}
   .reserva-email{color:var(--ink-mute); font-size:0.85rem; margin-top:2px;}
   .reserva-derecha{display:flex; align-items:center; gap:10px;}
+  .btn-editar{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--ink-soft);
+    font-family:'Work Sans', sans-serif;
+    font-size:0.8rem;
+    padding:7px 12px;
+    border-radius:99px;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:border-color .2s ease, color .2s ease;
+  }
+  .btn-editar:hover{border-color:var(--gold); color:var(--gold);}
   .btn-cancelar{
     background:transparent;
     border:1px solid var(--line);
@@ -248,6 +261,65 @@
     font-size:0.95rem;
   }
   [hidden]{display:none !important;}
+
+  /* ---------- Agregar turno ---------- */
+  .turno-dialog{
+    width:min(420px, calc(100vw - 40px));
+    max-height:min(88vh, 720px);
+    overflow-y:auto;
+    padding:28px;
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:var(--surface);
+    color:var(--ink);
+    box-shadow:0 24px 64px rgba(0,0,0,0.45);
+  }
+  .turno-dialog::backdrop{
+    background:rgba(10,7,5,0.72);
+    backdrop-filter:blur(2px);
+  }
+  .turno-dialog-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:16px;
+    margin-bottom:20px;
+  }
+  .turno-dialog-title{font-family:'Fraunces', serif; font-size:1.25rem;}
+  .turno-close{
+    flex-shrink:0;
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background:transparent;
+    color:var(--ink-soft);
+    cursor:pointer;
+    font-size:1.1rem;
+    line-height:1;
+  }
+  .turno-close:hover{border-color:var(--gold); color:var(--gold);}
+  .turno-form{display:flex; flex-direction:column; gap:14px;}
+  .turno-form label{
+    display:block;
+    font-size:0.82rem;
+    color:var(--ink-mute);
+    margin-bottom:6px;
+  }
+  .turno-form select, .turno-form input[type="text"], .turno-form input[type="email"], .turno-form input[type="date"], .turno-form input[type="time"]{
+    width:100%;
+    padding:12px 14px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    font-size:0.92rem;
+  }
+  .turno-form select:focus, .turno-form input:focus{outline:none; border-color:var(--gold);}
+  .turno-fila{display:flex; gap:12px;}
+  .turno-fila > div{flex:1;}
+  .turno-error{color:var(--error); font-size:0.85rem;}
 
   @media (max-width:600px){
     .reserva-card{flex-direction:column; align-items:flex-start;}
@@ -291,6 +363,7 @@
           <option value="hoy">Hoy</option>
           <option value="todas">Todas</option>
         </select>
+        <button type="button" class="btn btn-sm" id="btn-agregar">+ Agregar turno</button>
         <button type="button" class="btn btn-ghost btn-sm" id="btn-refrescar">Actualizar</button>
         <button type="button" class="btn btn-ghost btn-sm" id="btn-salir">Cerrar sesión</button>
       </div>
@@ -300,6 +373,46 @@
     <div id="lista-reservas"></div>
   </div>
 </div>
+
+<dialog id="turno-dialog" class="turno-dialog">
+  <div class="turno-dialog-head">
+    <p class="turno-dialog-title" id="turno-dialog-title">Agregar turno manual</p>
+    <button type="button" class="turno-close" id="turno-close" aria-label="Cerrar">✕</button>
+  </div>
+  <form class="turno-form" id="turno-form" novalidate>
+    <div>
+      <label for="turno-categoria">Categoría</label>
+      <select id="turno-categoria">
+        <option value="Manicuría">Manicuría</option>
+        <option value="Cosmetología">Cosmetología</option>
+      </select>
+    </div>
+    <div>
+      <label for="turno-servicio">Servicio</label>
+      <select id="turno-servicio"></select>
+    </div>
+    <div class="turno-fila">
+      <div>
+        <label for="turno-fecha">Fecha</label>
+        <input type="date" id="turno-fecha">
+      </div>
+      <div>
+        <label for="turno-hora">Hora</label>
+        <input type="time" id="turno-hora">
+      </div>
+    </div>
+    <div>
+      <label for="turno-nombre">Nombre de la clienta</label>
+      <input type="text" id="turno-nombre" placeholder="Ej: María López">
+    </div>
+    <div>
+      <label for="turno-email">Email (opcional)</label>
+      <input type="email" id="turno-email" placeholder="Ej: maria@gmail.com">
+    </div>
+    <p class="turno-error" id="turno-error" hidden></p>
+    <button type="submit" class="btn" id="turno-submit">Guardar turno</button>
+  </form>
+</dialog>
 
 <script src="https://cdn.jsdelivr.net/npm/firebase@10.12.2/firebase-app-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/firebase@10.12.2/firebase-auth-compat.js"></script>
@@ -359,6 +472,19 @@
   var btnRefrescar = document.getElementById('btn-refrescar');
   var estadoCarga = document.getElementById('estado-carga');
   var listaReservas = document.getElementById('lista-reservas');
+  var btnAgregar = document.getElementById('btn-agregar');
+  var turnoDialog = document.getElementById('turno-dialog');
+  var turnoDialogTitle = document.getElementById('turno-dialog-title');
+  var turnoClose = document.getElementById('turno-close');
+  var turnoForm = document.getElementById('turno-form');
+  var turnoCategoria = document.getElementById('turno-categoria');
+  var turnoServicio = document.getElementById('turno-servicio');
+  var turnoFecha = document.getElementById('turno-fecha');
+  var turnoHora = document.getElementById('turno-hora');
+  var turnoNombre = document.getElementById('turno-nombre');
+  var turnoEmail = document.getElementById('turno-email');
+  var turnoError = document.getElementById('turno-error');
+  var turnoSubmit = document.getElementById('turno-submit');
 
   function parseISODate(value){
     var parts = value.split('-').map(Number);
@@ -370,6 +496,152 @@
     var m = String(d.getMonth() + 1).padStart(2, '0');
     var day = String(d.getDate()).padStart(2, '0');
     return y + '-' + m + '-' + day;
+  }
+
+  // ---------- Agregar turno manual ----------
+  var SERVICIOS = {
+    'Manicuría': [
+      { nombre: "Semipermanente", duracion: 60 },
+      { nombre: "Nivelación / Kapping", duracion: 90 },
+      { nombre: "Extensiones Softgel", duracion: 120 },
+      { nombre: "Polygel", duracion: 120 },
+      { nombre: "Press On", duracion: 30 }
+    ],
+    'Cosmetología': [
+      { nombre: "Limpieza básica", duracion: 45 },
+      { nombre: "Limpieza profunda", duracion: 60 },
+      { nombre: "Personalizado", duracion: 60 }
+    ]
+  };
+
+  function toMinutes(hhmm){
+    var parts = hhmm.split(':').map(Number);
+    return parts[0] * 60 + parts[1];
+  }
+
+  function seSolapan(inicioA, duracionA, inicioB, duracionB){
+    return inicioA < (inicioB + duracionB) && inicioB < (inicioA + duracionA);
+  }
+
+  function renderTurnoServicios(servicioPreseleccionado){
+    var lista = SERVICIOS[turnoCategoria.value] || [];
+    turnoServicio.innerHTML = lista.map(function(s){
+      return '<option value="' + s.nombre + '" data-duracion="' + s.duracion + '">' + s.nombre + '</option>';
+    }).join('');
+    if (servicioPreseleccionado) turnoServicio.value = servicioPreseleccionado;
+  }
+
+  function categoriaDeServicio(nombreServicio){
+    for (var cat in SERVICIOS){
+      if (SERVICIOS[cat].some(function(s){ return s.nombre === nombreServicio; })) return cat;
+    }
+    return 'Manicuría';
+  }
+
+  if (turnoCategoria){
+    turnoCategoria.addEventListener('change', function(){ renderTurnoServicios(); });
+    renderTurnoServicios();
+  }
+
+  var editandoId = null;
+
+  function abrirTurnoDialog(item){
+    turnoForm.reset();
+    editandoId = item ? item.id : null;
+
+    if (item){
+      var r = item.datos;
+      turnoCategoria.value = categoriaDeServicio(r.servicio);
+      renderTurnoServicios(r.servicio);
+      turnoFecha.value = r.fecha;
+      turnoHora.value = r.hora;
+      turnoNombre.value = r.nombre || '';
+      turnoEmail.value = r.email || '';
+      turnoDialogTitle.textContent = 'Editar turno';
+      turnoSubmit.textContent = 'Guardar cambios';
+    } else {
+      turnoCategoria.value = 'Manicuría';
+      renderTurnoServicios();
+      turnoFecha.value = toISODate(new Date());
+      turnoDialogTitle.textContent = 'Agregar turno manual';
+      turnoSubmit.textContent = 'Guardar turno';
+    }
+
+    turnoError.hidden = true;
+    if (typeof turnoDialog.showModal === 'function') turnoDialog.showModal();
+  }
+
+  if (btnAgregar) btnAgregar.addEventListener('click', function(){ abrirTurnoDialog(); });
+  if (turnoClose) turnoClose.addEventListener('click', function(){ turnoDialog.close(); });
+  if (turnoDialog){
+    turnoDialog.addEventListener('click', function(e){
+      if (e.target === turnoDialog) turnoDialog.close();
+    });
+  }
+
+  if (turnoForm){
+    turnoForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      turnoError.hidden = true;
+
+      var servicio = turnoServicio.value;
+      var opcionSel = turnoServicio.selectedOptions[0];
+      var duracion = opcionSel ? Number(opcionSel.dataset.duracion) : null;
+      var fecha = turnoFecha.value;
+      var hora = turnoHora.value;
+      var nombre = turnoNombre.value.trim();
+      var email = turnoEmail.value.trim();
+
+      if (!servicio || !duracion || !fecha || !hora || !nombre){
+        turnoError.textContent = 'Completá servicio, fecha, hora y nombre.';
+        turnoError.hidden = false;
+        return;
+      }
+
+      var idActual = editandoId;
+      var textoBoton = idActual ? 'Guardar cambios' : 'Guardar turno';
+      turnoSubmit.disabled = true;
+      turnoSubmit.textContent = 'Guardando…';
+
+      db.collection('reservas').where('fecha', '==', fecha).get()
+        .then(function(snapshot){
+          var inicioMin = toMinutes(hora);
+          var choca = false;
+          snapshot.forEach(function(doc){
+            if (idActual && doc.id === idActual) return; // no comparar el turno contra sí mismo
+            var d = doc.data();
+            if (d.hora && d.duracion && seSolapan(inicioMin, duracion, toMinutes(d.hora), d.duracion)){
+              choca = true;
+            }
+          });
+          if (choca && !confirm('Ese horario se superpone con otra reserva ese día. ¿Igual querés guardarlo?')){
+            return Promise.reject({ cancelado: true });
+          }
+
+          var datos = { fecha: fecha, hora: hora, duracion: duracion, servicio: servicio, nombre: nombre };
+          if (email) datos.email = email;
+
+          if (idActual){
+            return db.collection('reservas').doc(idActual).update(datos);
+          }
+          datos.creado = firebase.firestore.FieldValue.serverTimestamp();
+          return db.collection('reservas').add(datos);
+        })
+        .then(function(){
+          turnoDialog.close();
+          cargarReservas();
+        })
+        .catch(function(err){
+          if (err && err.cancelado) return;
+          console.warn('No se pudo guardar el turno:', err);
+          turnoError.textContent = 'No se pudo guardar el turno. Probá de nuevo.';
+          turnoError.hidden = false;
+        })
+        .finally(function(){
+          turnoSubmit.disabled = false;
+          turnoSubmit.textContent = textoBoton;
+        });
+    });
   }
 
   // ---------- Login con Firebase Authentication (email/contraseña o Google) ----------
@@ -561,6 +833,15 @@
 
       var derecha = document.createElement('div');
       derecha.className = 'reserva-derecha';
+
+      var btnEditar = document.createElement('button');
+      btnEditar.type = 'button';
+      btnEditar.className = 'btn-editar';
+      btnEditar.textContent = 'Editar';
+      btnEditar.addEventListener('click', function(){
+        abrirTurnoDialog(item);
+      });
+      derecha.appendChild(btnEditar);
 
       var btnCancelar = document.createElement('button');
       btnCancelar.type = 'button';
